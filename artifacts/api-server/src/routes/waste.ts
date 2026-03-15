@@ -38,6 +38,37 @@ router.post("/submit", requireAuth, async (req: AuthRequest, res) => {
 
   const user = req.user!;
 
+  // Auto-approve after 4.5 seconds to simulate blockchain confirmation
+  setTimeout(async () => {
+    try {
+      const tokensAwarded = weightKg * TOKENS_PER_KG;
+      const txHash = generateTxHash();
+      const blockchainTimestamp = new Date().toISOString();
+
+      await db
+        .update(wasteSubmissionsTable)
+        .set({
+          status: "approved",
+          tokensAwarded,
+          transactionHash: txHash,
+          blockchainTimestamp,
+          updatedAt: new Date(),
+        })
+        .where(eq(wasteSubmissionsTable.id, submission.id));
+
+      await db
+        .update(usersTable)
+        .set({
+          tokenBalance: sql`${usersTable.tokenBalance} + ${tokensAwarded}`,
+          totalWasteKg: sql`${usersTable.totalWasteKg} + ${weightKg}`,
+          updatedAt: new Date(),
+        })
+        .where(eq(usersTable.id, userId));
+    } catch (err) {
+      console.error("Auto-approve failed for submission", submission.id, err);
+    }
+  }, 4500);
+
   return res.status(201).json({
     id: submission.id,
     userId: submission.userId,

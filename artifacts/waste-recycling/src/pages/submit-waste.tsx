@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { useSubmitWaste } from "@workspace/api-client-react";
+import { useSubmitWaste, getGetStatsOverviewQueryKey, getGetWasteTypeStatsQueryKey, getGetMonthlyStatsQueryKey, getGetUserProfileQueryKey, getGetUserSubmissionsQueryKey, getGetLeaderboardQueryKey } from "@workspace/api-client-react";
+import { useQueryClient } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -18,6 +19,7 @@ export function SubmitWastePage() {
   const submit = useSubmitWaste();
   const { toast } = useToast();
   const [, setLocation] = useLocation();
+  const queryClient = useQueryClient();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -37,12 +39,30 @@ export function SubmitWastePage() {
         } 
       },
       {
-        onSuccess: (data) => {
+        onSuccess: () => {
+          const estimatedTokens = Number(weightKg) * 10;
+
+          // Immediately refresh stats so the new submission shows up
+          queryClient.invalidateQueries({ queryKey: getGetStatsOverviewQueryKey() });
+          queryClient.invalidateQueries({ queryKey: getGetWasteTypeStatsQueryKey() });
+          queryClient.invalidateQueries({ queryKey: getGetMonthlyStatsQueryKey() });
+
           toast({ 
-            title: "Submission Successful!", 
-            description: `You will earn ${Number(weightKg) * 10} RCT tokens once verified.` 
+            title: "Submitted! Processing on blockchain...", 
+            description: `Approx. ${estimatedTokens} RCT will be credited in ~5 seconds.`,
           });
+
           setLocation("/dashboard");
+
+          // After 5s the backend has auto-approved — refresh dashboard + leaderboard
+          setTimeout(() => {
+            queryClient.invalidateQueries({ queryKey: getGetUserProfileQueryKey() });
+            queryClient.invalidateQueries({ queryKey: getGetUserSubmissionsQueryKey() });
+            queryClient.invalidateQueries({ queryKey: getGetLeaderboardQueryKey() });
+            queryClient.invalidateQueries({ queryKey: getGetStatsOverviewQueryKey() });
+            queryClient.invalidateQueries({ queryKey: getGetWasteTypeStatsQueryKey() });
+            queryClient.invalidateQueries({ queryKey: getGetMonthlyStatsQueryKey() });
+          }, 5000);
         },
         onError: (err: any) => {
           toast({ variant: "destructive", title: "Error", description: err.message });
