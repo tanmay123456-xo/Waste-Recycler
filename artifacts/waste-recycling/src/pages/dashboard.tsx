@@ -1,7 +1,7 @@
 import { useGetUserProfile, useGetUserSubmissions } from "@workspace/api-client-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { format } from "date-fns";
-import { Coins, Leaf, Recycle, Clock, ArrowUpRight, Copy, CheckCircle2, XCircle, FileClock } from "lucide-react";
+import { Coins, Leaf, Recycle, Clock, ArrowUpRight, Copy, CheckCircle2, XCircle, FileClock, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
 import { useToast } from "@/hooks/use-toast";
