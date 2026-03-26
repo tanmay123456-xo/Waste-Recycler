@@ -40,7 +40,7 @@ export function SubmitWastePage() {
       },
       {
         onSuccess: () => {
-          const estimatedTokens = Number(weightKg) * 10;
+          const estimatedEth = (Number(weightKg) * 0.0001).toFixed(4);
 
           // Immediately refresh stats so the new submission shows up
           queryClient.invalidateQueries({ queryKey: getGetStatsOverviewQueryKey() });
@@ -49,7 +49,7 @@ export function SubmitWastePage() {
 
           toast({ 
             title: "Submitted! Processing on blockchain...", 
-            description: `Approx. ${estimatedTokens} RCT will be credited in ~5 seconds.`,
+            description: `Approx. ${estimatedEth} ETH will be credited in ~5 seconds.`,
           });
 
           setLocation("/dashboard");

@@ -38,7 +38,7 @@ export function LeaderboardPage() {
               <tr>
                 <th className="px-6 py-5 w-24 text-center">Rank</th>
                 <th className="px-6 py-5">Hero</th>
-                <th className="px-6 py-5 text-right">Tokens Earned</th>
+                <th className="px-6 py-5 text-right">ETH Earned</th>
                 <th className="px-6 py-5 text-right hidden sm:table-cell">Total Recycled</th>
               </tr>
             </thead>
@@ -59,7 +59,7 @@ export function LeaderboardPage() {
                   </td>
                   <td className="px-6 py-4 text-right">
                     <span className="font-display font-bold text-emerald-600 text-xl">
-                      {entry.tokenBalance.toLocaleString()} <span className="text-sm font-medium">RCT</span>
+                      {entry.tokenBalance.toFixed(4)} <span className="text-sm font-medium">ETH</span>
                     </span>
                   </td>
                   <td className="px-6 py-4 text-right hidden sm:table-cell text-muted-foreground font-medium">

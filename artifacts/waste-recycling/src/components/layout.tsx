@@ -1,8 +1,9 @@
 import { ReactNode } from "react";
 import { Link, useLocation } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
+import { useMetaMask } from "@/hooks/use-metamask";
 import { useLogoutUser } from "@workspace/api-client-react";
-import { Leaf, LogOut, Menu, User, LayoutDashboard, Send, BarChart3, Trophy, ShieldAlert } from "lucide-react";
+import { Leaf, LogOut, Menu, User, LayoutDashboard, Send, BarChart3, Trophy, ShieldAlert, Wallet } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
@@ -10,6 +11,7 @@ export function Layout({ children }: { children: ReactNode }) {
   const { user, isAuthenticated, invalidateAuth } = useAuth();
   const logout = useLogoutUser();
   const [location] = useLocation();
+  const { account, connect, isConnecting, isInstalled } = useMetaMask(isAuthenticated);
 
   const handleLogout = () => {
     logout.mutate(undefined, {
@@ -75,6 +77,25 @@ export function Layout({ children }: { children: ReactNode }) {
             <div className="hidden md:flex items-center space-x-4">
               {isAuthenticated ? (
                 <div className="flex items-center space-x-3 border-l border-border pl-4">
+                  {/* MetaMask Button */}
+                  {account ? (
+                    <div className="flex items-center space-x-1.5 px-3 py-1.5 bg-orange-50 border border-orange-200 rounded-full text-xs font-mono text-orange-700">
+                      <div className="w-2 h-2 rounded-full bg-orange-400 animate-pulse" />
+                      {account.substring(0, 6)}...{account.substring(account.length - 4)}
+                    </div>
+                  ) : (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={connect}
+                      disabled={isConnecting || !isInstalled}
+                      className="rounded-full border-orange-200 text-orange-600 hover:bg-orange-50 hover:border-orange-300 text-xs h-8"
+                      title={!isInstalled ? "MetaMask not installed — visit metamask.io" : "Connect MetaMask wallet"}
+                    >
+                      <Wallet className="w-3.5 h-3.5 mr-1.5" />
+                      {isConnecting ? "Connecting..." : !isInstalled ? "Install MetaMask" : "Connect Wallet"}
+                    </Button>
+                  )}
                   <Link href="/profile" className="flex items-center text-sm font-medium text-foreground hover:text-primary transition-colors">
                     <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center mr-2 text-primary border border-primary/20">
                       <User className="w-4 h-4" />

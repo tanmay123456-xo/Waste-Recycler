@@ -31,7 +31,7 @@ export function HomePage() {
             </h1>
             
             <p className="text-lg md:text-xl text-muted-foreground max-w-[90%] leading-relaxed">
-              Join the revolution in sustainable waste management. Submit verified recycling proof, earn RCT tokens on the blockchain, and help heal the planet.
+              Join the revolution in sustainable waste management. Submit verified recycling proof, earn ETH on the blockchain, and help heal the planet.
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 pt-4">
@@ -73,7 +73,7 @@ export function HomePage() {
               </div>
               <div>
                 <p className="text-xs text-muted-foreground font-semibold uppercase tracking-wider">Reward Rate</p>
-                <p className="text-xl font-bold text-foreground">1 kg = 10 RCT</p>
+                <p className="text-xl font-bold text-foreground">1 kg = 0.0001 ETH</p>
               </div>
             </motion.div>
           </motion.div>
@@ -89,7 +89,7 @@ export function HomePage() {
         
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
           <StatBox label="Total Waste Recycled" value={`${stats?.totalWasteKg?.toLocaleString() || '0'} kg`} icon={<Globe2 className="w-5 h-5" />} />
-          <StatBox label="Tokens Distributed" value={stats?.totalTokensIssued?.toLocaleString() || '0'} icon={<Coins className="w-5 h-5" />} />
+          <StatBox label="ETH Distributed" value={`${(stats?.totalTokensIssued || 0).toFixed(4)} ETH`} icon={<Coins className="w-5 h-5" />} />
           <StatBox label="Active Recyclers" value={stats?.totalUsers?.toLocaleString() || '0'} icon={<Users className="w-5 h-5" />} />
           <StatBox label="Verified Submissions" value={stats?.totalSubmissions?.toLocaleString() || '0'} icon={<ShieldCheck className="w-5 h-5" />} />
         </div>

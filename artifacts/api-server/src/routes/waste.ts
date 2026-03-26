@@ -8,7 +8,7 @@ import crypto from "crypto";
 
 const router: IRouter = Router();
 
-const TOKENS_PER_KG = 10;
+const ETH_PER_KG = 0.0001;
 
 function generateTxHash(): string {
   return "0x" + crypto.randomBytes(32).toString("hex");
@@ -41,7 +41,7 @@ router.post("/submit", requireAuth, async (req: AuthRequest, res) => {
   // Auto-approve after 4.5 seconds to simulate blockchain confirmation
   setTimeout(async () => {
     try {
-      const tokensAwarded = weightKg * TOKENS_PER_KG;
+      const tokensAwarded = weightKg * ETH_PER_KG;
       const txHash = generateTxHash();
       const blockchainTimestamp = new Date().toISOString();
 

@@ -1,7 +1,8 @@
 import { useGetUserProfile, useGetUserSubmissions } from "@workspace/api-client-react";
+import { useMetaMask } from "@/hooks/use-metamask";
 import { Card, CardContent } from "@/components/ui/card";
 import { format } from "date-fns";
-import { Coins, Leaf, Recycle, Clock, ArrowUpRight, Copy, CheckCircle2, XCircle, FileClock, ShieldCheck } from "lucide-react";
+import { Coins, Leaf, Recycle, Clock, ArrowUpRight, Copy, CheckCircle2, XCircle, FileClock, ShieldCheck, Wallet } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
 import { useToast } from "@/hooks/use-toast";
@@ -11,6 +12,7 @@ export function DashboardPage() {
   const { data: profile, isLoading: isProfileLoading } = useGetUserProfile();
   const { data: submissionsData, isLoading: isSubsLoading } = useGetUserSubmissions({});
   const { toast } = useToast();
+  const { account, connect, isConnecting, isInstalled } = useMetaMask(true);
 
   const handleCopyHash = (hash: string) => {
     navigator.clipboard.writeText(hash);
@@ -54,17 +56,29 @@ export function DashboardPage() {
         </Link>
       </div>
 
-      {profile?.walletAddress ? (
-        <div className="inline-flex items-center px-4 py-2 bg-secondary rounded-lg border border-border text-sm font-mono text-muted-foreground">
-          <span className="mr-2 uppercase text-xs font-bold tracking-wider text-foreground">Wallet:</span> 
-          {profile.walletAddress}
+      {account ? (
+        <div className="inline-flex items-center gap-3 px-4 py-2.5 bg-orange-50 border border-orange-200 rounded-xl text-sm">
+          <div className="w-2.5 h-2.5 rounded-full bg-orange-400 animate-pulse" />
+          <span className="text-xs font-bold uppercase tracking-wider text-orange-700">MetaMask</span>
+          <span className="font-mono text-orange-800">{account.substring(0, 10)}...{account.substring(account.length - 6)}</span>
+          <span className="text-xs text-orange-500 bg-orange-100 px-2 py-0.5 rounded-full font-medium">Connected</span>
         </div>
       ) : (
-        <div className="bg-yellow-50 border border-yellow-200 text-yellow-800 px-4 py-3 rounded-xl flex items-center justify-between">
-          <span className="text-sm font-medium">You haven't connected a wallet to receive on-chain tokens.</span>
-          <Link href="/profile">
-            <Button size="sm" variant="outline" className="bg-white border-yellow-300 hover:bg-yellow-100">Add Wallet</Button>
-          </Link>
+        <div className="bg-orange-50 border border-orange-200 text-orange-800 px-4 py-3 rounded-xl flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Wallet className="w-4 h-4" />
+            <span className="text-sm font-medium">
+              {isInstalled ? "Connect MetaMask to link your Ethereum wallet and receive ETH rewards." : "Install MetaMask to receive Ethereum rewards on-chain."}
+            </span>
+          </div>
+          <Button
+            size="sm"
+            onClick={isInstalled ? connect : () => window.open("https://metamask.io", "_blank")}
+            disabled={isConnecting}
+            className="bg-orange-500 hover:bg-orange-600 text-white border-0 shadow-sm"
+          >
+            {isConnecting ? "Connecting..." : isInstalled ? "Connect MetaMask" : "Install MetaMask"}
+          </Button>
         </div>
       )}
 
@@ -75,14 +89,14 @@ export function DashboardPage() {
             <div className="absolute right-0 top-0 w-32 h-32 bg-primary/5 rounded-bl-full -z-10" />
             <CardContent className="p-6">
               <div className="flex items-center justify-between mb-4">
-                <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Token Balance</p>
+                <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">ETH Balance</p>
                 <div className="p-2 bg-primary/10 rounded-lg text-primary"><Coins className="w-5 h-5" /></div>
               </div>
               <div className="flex items-baseline">
-                <h2 className="text-5xl font-display font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 to-green-400">
-                  {profile?.tokenBalance?.toLocaleString() || 0}
+                <h2 className="text-4xl font-display font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 to-green-400">
+                  {(profile?.tokenBalance || 0).toFixed(4)}
                 </h2>
-                <span className="ml-2 text-xl font-bold text-muted-foreground">RCT</span>
+                <span className="ml-2 text-xl font-bold text-muted-foreground">ETH</span>
               </div>
             </CardContent>
           </Card>
@@ -171,7 +185,7 @@ export function DashboardPage() {
                         </div>
                       </td>
                       <td className="px-6 py-4 text-right font-bold text-emerald-600">
-                        {sub.tokensAwarded ? `+${sub.tokensAwarded} RCT` : '-'}
+                        {sub.tokensAwarded ? `+${Number(sub.tokensAwarded).toFixed(4)} ETH` : '-'}
                       </td>
                       <td className="px-6 py-4 text-right">
                         {sub.transactionHash ? (

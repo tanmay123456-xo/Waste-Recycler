@@ -7,7 +7,7 @@ import crypto from "crypto";
 
 const router: IRouter = Router();
 
-const TOKENS_PER_KG = 10;
+const ETH_PER_KG = 0.0001;
 
 function generateTxHash(): string {
   return "0x" + crypto.randomBytes(32).toString("hex");
@@ -74,7 +74,7 @@ router.post("/submissions/:id/approve", requireAdmin, async (req: AuthRequest, r
     return res.status(404).json({ error: "Not found", message: "Submission not found" });
   }
 
-  const tokensAwarded = existing.weightKg * TOKENS_PER_KG;
+  const tokensAwarded = existing.weightKg * ETH_PER_KG;
   const txHash = generateTxHash();
   const blockchainTimestamp = new Date().toISOString();
 

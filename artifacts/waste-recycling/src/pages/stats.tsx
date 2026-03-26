@@ -23,7 +23,7 @@ export function StatsPage() {
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
         <StatCard title="Total Recycled" value={`${overview?.totalWasteKg?.toLocaleString()} kg`} />
-        <StatCard title="Tokens Issued" value={`${overview?.totalTokensIssued?.toLocaleString()} RCT`} />
+        <StatCard title="ETH Issued" value={`${(overview?.totalTokensIssued || 0).toFixed(4)} ETH`} />
         <StatCard title="Total Submissions" value={overview?.totalSubmissions?.toLocaleString() || '0'} />
         <StatCard title="Active Participants" value={overview?.totalUsers?.toLocaleString() || '0'} />
       </div>
