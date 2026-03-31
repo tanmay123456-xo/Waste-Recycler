@@ -8,7 +8,7 @@ import crypto from "crypto";
 
 const router: IRouter = Router();
 
-const ETH_PER_KG = 0.0001;
+const TOKENS_PER_KG = 10;
 
 function generateTxHash(): string {
   return "0x" + crypto.randomBytes(32).toString("hex");
